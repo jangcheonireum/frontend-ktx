@@ -1,4 +1,4 @@
-// Trang chủ sinh viên – khung layout Sinh viên (TS1-03). Số liệu chi tiết bổ sung ở Sprint 2–5.
+// Trang chủ sinh viên.
 (async function(K) {
     const page = document.getElementById("page");
     const s = K.session.get() || {};
@@ -15,8 +15,9 @@
   <div class="hello mb-4">
     <div class="avatar lg">${K.initials(s.hoTen)}</div>
     <div><h1>${greet}, ${K.esc((s.hoTen || "").split(" ").pop())}</h1><p>${K.esc(sv.khoa || "")} · Lớp ${K.esc(sv.lop || "—")} · MSSV ${K.esc(s.mssv || "")}</p></div>
-    <div class="room-badge">${p ? `<small>Phòng đang ở</small><b>${p.phongId}</b><small>${K.esc(tn.tenToa)} · tầng ${p.tang}</small>` : `<small>Chưa có phòng</small><b>—</b>`}</div>
+    <div class="room-badge">${p ? `<small>Phòng đang ở</small><b>${p.phongId}</b><small>${K.esc(tn.tenToa)} · tầng ${p.tang}</small>` : `<small>${sv.phongDangKy ? "Đang chờ duyệt" : "Chưa có phòng"}</small><b>${K.esc(sv.phongDangKy || "—")}</b>`}</div>
   </div>
+  ${K.pageDirectory(s.vaiTro)}
 
   <div class="row g-4">
     <div class="col-lg-8">
@@ -28,22 +29,22 @@
             <div class="col-sm-3"><div class="text-ink3 small">Giá thuê</div><div class="fw-semibold num">${K.money(lp.giaChuan)}<span class="text-ink3 fw-normal">/tháng</span></div></div>
             <div class="col-sm-3"><div class="text-ink3 small">Trưởng nhà</div><div class="fw-semibold">${K.esc(tn.truongNha)}</div></div>
             <div class="col-12">${(lp.tienIch || []).map(t => `<span class="chip">${K.esc(t)}</span>`).join("")}</div>
-          </div>` : `<div class="empty"><i class="bi bi-door-closed"></i><b>Bạn chưa được xếp phòng</b>Đăng ký thuê phòng sẽ mở ở Sprint 2.</div>`}
+          </div>` : `<div class="empty"><i class="bi bi-door-closed"></i><b>${sv.phongDangKy ? `Đang chờ duyệt phòng ${K.esc(sv.phongDangKy)}` : "Bạn chưa được xếp phòng"}</b><a href="dang-ky-phong.html">${sv.phongDangKy ? "Xem hoặc hủy nguyện vọng" : "Đăng ký thuê phòng"}</a></div>`}
         </div></div>
 
-      <div class="panel"><div class="panel-head"><h3>Thông báo mới</h3><span class="sprint-note ms-auto"><i class="bi bi-info-circle"></i>Xem đầy đủ ở Sprint 2</span></div>
+      <div class="panel"><div class="panel-head"><h3>Thông báo mới</h3><a class="sub ms-auto" href="thong-bao.html">Xem tất cả</a></div>
         <ul class="list-k">${tbs.slice(0, 4).map(t => `<li><div class="ic ${t.loai === "Tài chính" ? "violet" : t.loai === "Bảo trì" ? "warn" : t.loai === "Quan trọng" ? "bad" : "blue"}"><i class="bi ${t.loai === "Tài chính" ? "bi-cash-coin" : t.loai === "Bảo trì" ? "bi-tools" : t.loai === "Quan trọng" ? "bi-exclamation-lg" : "bi-calendar-event"}"></i></div><div class="flex-grow-1"><div class="t1">${K.esc(t.tieuDe)}</div><div class="t2">${K.esc(t.doiTuong)} · ${K.ago(t.ngayGui)}</div></div></li>`).join("")}</ul></div>
     </div>
     <div class="col-lg-4">
       <div class="panel mb-4"><div class="panel-head"><h3>Hóa đơn tháng 10</h3></div><div class="panel-body">
         ${hd ? `<div class="d-flex justify-content-between align-items-end"><div><div class="text-ink3 small">Tổng phòng phải trả</div><div class="fs-4 fw-bold num">${K.money(hd.tienPhong + hd.tienDien + hd.tienNuoc + hd.dichVu)}</div></div>${hd.trangThai === "Đã thanh toán" ? '<span class="pill ok">Đã thanh toán</span>' : hd.trangThai === "Quá hạn" ? '<span class="pill bad">Quá hạn</span>' : '<span class="pill warn">Chưa thanh toán</span>'}</div>
-        <div class="small text-ink3 mt-2">Hạn thanh toán ${K.date(hd.hanThanhToan)} · thanh toán trực tuyến mở ở Sprint 5</div>` : `<div class="text-ink3">Chưa có hóa đơn cho phòng của bạn.</div>`}
+        <div class="small text-ink3 mt-2">Hạn thanh toán ${K.date(hd.hanThanhToan)}</div><a class="btn btn-sm btn-ghost mt-3" href="hoa-don.html">Xem hóa đơn</a>` : `<div class="text-ink3">Chưa có hóa đơn cho phòng của bạn.</div>`}
       </div></div>
       <div class="panel"><div class="panel-head"><h3>Lối tắt</h3></div><div class="panel-body"><div class="quick">
         <a href="doi-mat-khau.html"><i class="bi bi-key"></i>Đổi mật khẩu</a>
-        <a href="#" data-later="2"><i class="bi bi-person-vcard"></i>Hồ sơ cá nhân</a>
-        <a href="#" data-later="6"><i class="bi bi-chat-left-text"></i>Gửi phản ánh</a>
-        <a href="#" data-later="5"><i class="bi bi-clock-history"></i>Lịch sử ra/vào</a>
+        <a href="ho-so.html"><i class="bi bi-person-vcard"></i>Hồ sơ cá nhân</a>
+        <a href="phan-anh.html"><i class="bi bi-chat-left-text"></i>Gửi phản ánh</a>
+        <a href="ra-vao.html"><i class="bi bi-clock-history"></i>Lịch sử ra/vào</a>
       </div></div></div>
     </div>
   </div>`;

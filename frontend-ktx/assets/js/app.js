@@ -70,13 +70,34 @@
       { id: "doi-mat-khau", icon: "bi-key", t: "Đổi mật khẩu", s: 1 }
     ]
   };
-  // Trang sinh viên đã có file (Sprint 1). Các mục khác hiển thị "thuộc Sprint X".
-  const BUILT_SV = ["trang-chu", "doi-mat-khau"];
+  const BUILT_SV = ["trang-chu", "ho-so", "dang-ky-phong", "hoa-don", "ra-vao", "thong-bao", "phan-anh", "doi-mat-khau"];
 
   function brandMark() {
     return `<div class="brand-mark" aria-hidden="true">${[1, 0, 1, 0, 1, 1, 1, 0, 0].map(o => `<span class="${o ? "on" : ""}"></span>`).join("")}</div>`;
   }
   K.brandMark = brandMark;
+
+  K.pageDirectory = function (role) {
+    if (role !== "Sinh viên" && !ADMIN_ROLES.includes(role)) return "";
+    const area = role === "Sinh viên" ? "sinhvien" : "admin";
+    let html = "", group = "", links = [];
+    const flushGroup = () => {
+      if (!links.length) return;
+      html += `<div class="mb-3"><div class="small fw-semibold text-ink3 mb-2">${esc(group)}</div><div class="quick">${links.join("")}</div></div>`;
+      links = [];
+    };
+    MENU[area].forEach(i => {
+      if (i.g) { flushGroup(); group = i.g; return; }
+      if (i.roles && !i.roles.includes(role)) return;
+      if (area === "admin" && role === "Bảo vệ" && i.id === "doi-mat-khau") return;
+      const later = area === "sinhvien" && !BUILT_SV.includes(i.id);
+      const href = later ? "#" : `${i.id}.html`;
+      const note = later ? `<small>Thuộc Sprint ${esc(i.s)}</small>` : "";
+      links.push(`<a href="${href}" ${later ? `data-later="${esc(i.s)}"` : ""}><i class="bi ${i.icon}"></i><span>${esc(i.t)}${note}</span></a>`);
+    });
+    flushGroup();
+    return `<section class="panel mb-4"><div class="panel-head"><h3>Tất cả trang</h3><span class="sub">Chọn trang để mở</span></div><div class="panel-body">${html}</div></section>`;
+  };
 
   function renderShell() {
     const body = document.body;
@@ -103,7 +124,7 @@
       navHtml += `<div class="nav-group">${group}</div>`;
       groupLinks.forEach(i => {
         const href = area === "sinhvien" && !BUILT_SV.includes(i.id) ? `#" data-later="${i.s}` : `${i.id}.html`;
-        const tag = i.badge && badgeVal[i.badge] ? `<span class="tag">${badgeVal[i.badge]}</span>` : (i.s === 1 ? `<span class="tag" title="Thuộc Sprint 1">S1</span>` : `<span class="tag later" title="${i.s === "MR" ? "Hạng mục mở rộng" : "Thuộc Sprint " + i.s}">${i.s === "MR" ? "MR" : "S" + i.s}</span>`);
+        const tag = i.badge && badgeVal[i.badge] ? `<span class="tag">${badgeVal[i.badge]}</span>` : (area === "sinhvien" && BUILT_SV.includes(i.id) ? "" : (i.s === 1 ? `<span class="tag" title="Thuộc Sprint 1">S1</span>` : `<span class="tag later" title="${i.s === "MR" ? "Hạng mục mở rộng" : "Thuộc Sprint " + i.s}">${i.s === "MR" ? "MR" : "S" + i.s}</span>`));
         navHtml += `<a class="nav-link-item ${i.id === page ? "active" : ""}" href="${href}" ${i.id === page ? 'aria-current="page"' : ""}><i class="bi ${i.icon}"></i><span>${i.t}</span>${tag}</a>`;
       });
       groupLinks = [];

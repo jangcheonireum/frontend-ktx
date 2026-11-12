@@ -11,6 +11,7 @@
     page.innerHTML = `
   <div class="page-head"><div><h1>Chào ${K.esc(s.hoTen)}, hôm nay KTX thế nào</h1><p>${new Date().toLocaleDateString("vi-VN", { weekday: "long", day: "2-digit", month: "2-digit", year: "numeric" })}</p></div>
     <div class="actions"><a class="btn btn-ghost" href="thong-bao.html"><i class="bi bi-megaphone"></i>Gửi thông báo</a><a class="btn btn-primary" href="phong.html"><i class="bi bi-door-open"></i>Xem phòng</a></div></div>
+  ${K.pageDirectory(s.vaiTro)}
   <div class="stat-strip">
     ${K.stat("c-blue", "bi-pie-chart", "Tỷ lệ lấp đầy", `${Math.round(occ / tot * 100)}<small>%</small>`, `${occ}/${tot} chỗ đang dùng`)}
     ${K.stat("c-ok", "bi-door-closed", "Phòng còn trống", phongs.filter(p => p.trangThai === "Còn trống").length, `${tot - occ} chỗ có thể xếp`)}
