@@ -1,17 +1,17 @@
 // Trang chủ sinh viên – khung layout Sinh viên (TS1-03). Số liệu chi tiết bổ sung ở Sprint 2–5.
-(async function (K) {
-  const page = document.getElementById("page");
-  const s = K.session.get() || {};
-  const [svs, phongs, lps, tns, tbs, hds] = await Promise.all(["sinhVien", "phong", "loaiPhong", "toaNha", "thongBao", "hoaDon"].map(r => K.api.list(r)));
-  const sv = svs.find(x => x.mssv === s.mssv) || {};
-  const p = phongs.find(x => x.phongId === sv.phongDangOid);
-  const lp = p && lps.find(x => x.loaiPhongId === p.loaiPhongId);
-  const tn = p && tns.find(x => x.toaNhaId === p.toaNhaId);
-  const hd = p && hds.find(x => x.phongId === p.phongId);
-  const hour = new Date().getHours();
-  const greet = hour < 11 ? "Chào buổi sáng" : hour < 18 ? "Chào buổi chiều" : "Chào buổi tối";
+(async function(K) {
+    const page = document.getElementById("page");
+    const s = K.session.get() || {};
+    const [svs, phongs, lps, tns, tbs, hds] = await Promise.all(["sinhVien", "phong", "loaiPhong", "toaNha", "thongBao", "hoaDon"].map(r => K.api.list(r)));
+    const sv = svs.find(x => x.mssv === s.mssv) || {};
+    const p = phongs.find(x => x.phongId === sv.phongDangOid);
+    const lp = p && lps.find(x => x.loaiPhongId === p.loaiPhongId);
+    const tn = p && tns.find(x => x.toaNhaId === p.toaNhaId);
+    const hd = p && hds.find(x => x.phongId === p.phongId);
+    const hour = new Date().getHours();
+    const greet = hour < 11 ? "Chào buổi sáng" : hour < 18 ? "Chào buổi chiều" : "Chào buổi tối";
 
-  page.innerHTML = `
+    page.innerHTML = `
   <div class="hello mb-4">
     <div class="avatar lg">${K.initials(s.hoTen)}</div>
     <div><h1>${greet}, ${K.esc((s.hoTen || "").split(" ").pop())}</h1><p>${K.esc(sv.khoa || "")} · Lớp ${K.esc(sv.lop || "—")} · MSSV ${K.esc(s.mssv || "")}</p></div>
